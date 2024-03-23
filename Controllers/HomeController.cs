@@ -1,30 +1,28 @@
 using Cadastro2.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Cadastro2.Services;
 
 namespace Cadastro2.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(ILogger<HomeController> logger) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+        private readonly ILogger<HomeController> _logger = logger;
+        private readonly ServicoFormatador _servicoFormatador; // Injetar o serviço no controlador
 
         [HttpPost]
         public IActionResult Resultados(string nome, string endereco, string telefone)
         {
-            // Atribuir os dados às propriedades ViewData do controlador atual
-            ViewData["Nome"] = nome;
-            ViewData["Endereco"] = endereco;
-            ViewData["Telefone"] = telefone;
+            // Chamar o serviço para formatar os dados
+            ServicoFormatador servico = new ServicoFormatador();
+            string dadosFormatados = servico.FormatarDados(nome, endereco, telefone);
+
+            // Atribuir os dados formatados às propriedades ViewData do controlador atual
+            ViewData["DadosFormatados"] = dadosFormatados;
 
             // Retornar a visualização do controlador atual
             return View();
         }
-
 
 
         public IActionResult Index()
